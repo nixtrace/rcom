@@ -6,7 +6,7 @@ describe 'Node' do
     @local = Rcom::Node.new('local')
   end
 
-  it 'represents a Node' do
+  it 'represents a Redis connection to a node' do
     @local.must_be_instance_of Rcom::Node
   end
 
