@@ -7,7 +7,7 @@ module Rcom
       @uri = ENV[uri.upcase]
     end
 
-    def connection
+    def connect
       Redis.new(url: uri)
     end
   end

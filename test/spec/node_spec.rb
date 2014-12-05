@@ -16,8 +16,8 @@ describe 'Node' do
     end.must_raise ArgumentError
   end
 
-  it 'has a Redis connection to the node' do
-    connection = @local.connection
+  it 'can connect to the Redis node' do
+    connection = @local.connect
     connection.must_be_instance_of Redis
   end
 end
