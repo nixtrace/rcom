@@ -8,16 +8,16 @@ module Rcom
     end
 
     def publish(message)
-      node.lpush(queue, message.to_json)
+      node.lpush(queue, message.to_msgpack)
     end
 
     def subscribe
       begin
         loop do
           ch, request = node.brpop(queue)
-          message = JSON.parse(
+          message = MessagePack.unpack(
             request,
-            symbolize_names: true
+            symbolize_keys: true
           )
           yield message
         end

@@ -1,5 +1,5 @@
 require 'redis'
-require 'json'
+require 'msgpack'
 require 'rcom/version'
 require 'rcom/node'
 require 'rcom/topic'

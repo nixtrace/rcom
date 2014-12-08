@@ -8,16 +8,16 @@ module Rcom
     end
 
     def publish(message)
-      node.publish(key, message.to_json)
+      node.publish(key, message.to_msgpack)
     end
 
     def subscribe
       begin
         node.subscribe(key) do |on|
           on.message do |channel, message|
-            message = JSON.parse(
+            message = MessagePack.unpack(
               message,
-              symbolize_names: true
+              symbolize_keys: true
             )
             yield message
           end
