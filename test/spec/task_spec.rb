@@ -26,7 +26,6 @@ describe 'Task' do
     # on the consumer side. Process, then kill
     # the long-running consumer.
     Open3.popen3(consumer) do |stdin, stdout, stderr, wait_thr|
-      sleep 1
       spawn(publisher)
       completed_job = stdout.gets
       Process.kill('INT', wait_thr.pid)
