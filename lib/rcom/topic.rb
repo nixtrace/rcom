@@ -8,7 +8,12 @@ module Rcom
     end
 
     def publish(message)
-      node.publish(key, message.to_msgpack)
+      begin
+        node.publish(key, message.to_msgpack)
+        return true
+      rescue
+        return nil
+      end
     end
 
     def subscribe

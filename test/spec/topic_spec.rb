@@ -25,13 +25,13 @@ describe 'Topic' do
     # on the subscriber side. Then kill
     # the long-running subscriber.
     Open3.popen3(subscriber) do |stdin, stdout, stderr, wait_thr|
-      sleep 1
+      sleep 2
       spawn(publisher)
       read_message = stdout.gets
       Process.kill('INT', wait_thr.pid)
     end
 
-    output = eval read_message.chomp
+    output = eval(read_message.chomp)
     output.must_equal message
   end
 end
