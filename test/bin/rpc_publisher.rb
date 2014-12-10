@@ -8,5 +8,5 @@ message = {
   args: 1
 }
 node = Rcom::Node.new('local').connect
-service = Rcom::Rpc.new(node: node, service: 'auth')
-p service.request(message)
+auth = Rcom::Rpc.new(node: node, service: 'auth')
+p auth.request(message)

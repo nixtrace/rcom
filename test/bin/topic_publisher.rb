@@ -8,6 +8,6 @@ message = {
   key: 'xxxccc'
 }
 node = Rcom::Node.new('local').connect
-topic = Rcom::Topic.new(node: node, key: 'users')
+users = Rcom::Topic.new(node: node, key: 'users')
 
-topic.publish(message)
+users.publish(message)
