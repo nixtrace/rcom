@@ -27,6 +27,7 @@ A node represents a Redis connection to a server address specified with an ENV v
 ```ruby
 # Specify this in your .env file.
 ENV['local'] = 'redis://localhost'
+
 node = Rcom::Node.new('local').connect
 ```
 
