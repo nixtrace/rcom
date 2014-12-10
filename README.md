@@ -18,14 +18,14 @@ gem 'rcom'
 
 ## Usage.
 
-Rcom supports the request-response, publish-subscribe and task queues patterns for inter-service messaging. Publishers are non blocking, subscribers/consumers are blocking and should be run as independent processes. Processes communicate using MessagePack internally.
+Rcom supports the request-response, publish-subscribe and task queues patterns for inter-service messaging. Publishers are non-blocking, subscribers/consumers are blocking and should be run as independent processes. Processes communicate using MessagePack internally.
 
 ### Node.
 
 A node represents a Redis connection to a server address specified with an ENV variable.
 
 ```ruby
-# Specify this in your ENV. This is only an example.
+# Specify this in your .env file.
 ENV['local'] = 'redis://localhost'
 node = Rcom::Node.new('local').connect
 ```
@@ -91,7 +91,38 @@ end
 
 ## RPC, requests and responses.
 
-In some cases services need real time informations from other services that can't be asynchronously processed.
+In some cases services need real time informations from other services that can't be asynchronously processed. A service can create a request on a route. The other service listening on the same route will reply to the request.
+
+- Publisher.
+
+```ruby
+message = {
+  route: 'user.key',
+  args: 1
+}
+
+node = Rcom::Node.new('local').connect
+auth = Rcom::Rpc.new(node: node, service: 'auth')
+
+auth.request(message)
+```
+
+- Consumer.
+
+```ruby
+node = Rcom::Node.new('local').connect
+auth = Rcom::Rpc.new(node: node, service: 'auth')
+
+auth.subscribe do |request|
+  request.on('user.key') do |params|
+    request.reply = 'xxxccc'
+  end
+
+  request.on('user.password') do |params|
+    request.reply = 'not authorized'
+  end
+end
+```
 
 ## Test.
 
