@@ -12,8 +12,7 @@ describe 'Rpc' do
   end
 
   it 'returns nil if the request cannot be processed' do
-    service = Rcom::Rpc.new(node: @node, service: 'auth')
-    service.request(method: 'nonexistent').must_equal nil
+    @service.request(route: 'nonexistent').must_equal nil
   end
 
   it 'works in a request/response scenario' do

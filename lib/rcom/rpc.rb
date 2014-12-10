@@ -11,7 +11,7 @@ module Rcom
       begin
         request = {
           id: SecureRandom.hex,
-          method: params[:method],
+          route: params[:route],
           args: params[:args] || ''
         }
 
@@ -54,8 +54,8 @@ module Rcom
       @message = message
     end
 
-    def on(method)
-      return nil unless message[:method] == method
+    def on(route)
+      return nil unless message[:route] == route
       yield message[:args]
     end
   end

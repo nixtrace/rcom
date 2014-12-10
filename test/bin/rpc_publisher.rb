@@ -4,7 +4,7 @@ ENV['LOCAL'] = 'redis://localhost'
 require 'rcom'
 
 message = {
-  method: 'user.key',
+  route: 'user.key',
   args: 1
 }
 node = Rcom::Node.new('local').connect
