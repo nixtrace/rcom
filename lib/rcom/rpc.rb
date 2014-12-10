@@ -1,12 +1,24 @@
 module Rcom
+  # Rpc implements the request/response pattern.
   class Rpc
-    attr_reader :node, :service
+    # @return [Rcom::Node]
+    attr_reader :node
+    # @return [String]
+    attr_reader :service
 
+    # @param params [Hash]
+    # @option params :node [Rcom::Node] Example: Rcom::Node.new('local').connect
+    # @option params :service [String] Example: 'auth'
     def initialize(params)
       @node = params[:node]
       @service = params[:service]
     end
 
+    # @param params [Hash]
+    # @option params :route [String] Example: 'users.key'
+    # @option params :args Example: 1
+    # @return [reply, nil] Returns the reply or nil if the
+    # request can't be processed.
     def request(params)
       begin
         request = {
@@ -27,6 +39,8 @@ module Rcom
       end
     end
 
+    # Subscribe to the service and listen to requests.
+    # @yieldparam router [Rcom::Router] A router to match the request.
     def subscribe
       begin
         loop do
@@ -47,13 +61,16 @@ module Rcom
     end
   end
 
+  # A router can match on a particular route.
   class Router
     attr_accessor :message, :reply
 
+    # @param message [Hash] The message received with the request.
     def initialize(message)
       @message = message
     end
 
+    # @yieldparam args
     def on(route)
       return nil unless message[:route] == route
       yield message[:args]

@@ -1,12 +1,19 @@
 module Rcom
+  # Implements tasks and queues.
   class Task
     attr_reader :node, :queue
 
-    def initialize(args)
-      @node = args[:node]
-      @queue = args[:queue]
+    # @param params [Hash]
+    # @option params :node [Rcom::Node]
+    # @option params :queue [String] Example: 'messages'
+    def initialize(params)
+      @node = params[:node]
+      @queue = params[:queue]
     end
 
+    # @param message [Hash]
+    # @return [true, nil] True if the message can be queued,
+    # or nil if it can't be queued.
     def publish(message)
       begin
         node.lpush(queue, message.to_msgpack)
@@ -16,6 +23,7 @@ module Rcom
       end
     end
 
+    # @yieldparam message [Hash] the message received.
     def subscribe
       begin
         loop do
