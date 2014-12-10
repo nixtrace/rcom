@@ -24,10 +24,12 @@ Rcom supports the request-response, publish-subscribe and task queues patterns f
 
 A node represents a Redis connection to a server address specified with an ENV variable.
 
-```ruby
-# Specify this in your .env file.
-ENV['local'] = 'redis://localhost'
+```sh
+#.env
+LOCAL=redis://localhost
+```
 
+```ruby
 node = Rcom::Node.new('local').connect
 ```
 

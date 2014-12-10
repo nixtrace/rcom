@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
-ENV['local'] = 'redis://localhost'
+ENV['LOCAL'] = 'redis://localhost'
 
 require 'rcom'
 
