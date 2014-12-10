@@ -12,8 +12,7 @@ module Rcom
     end
 
     # @param message [Hash]
-    # @return [true, nil] True if the message can be sent,
-    # or nil if it can't be sent.
+    # @return [true, nil] true if it can be published, otherwise nil.
     def publish(message)
       begin
         node.publish(key, message.to_msgpack)

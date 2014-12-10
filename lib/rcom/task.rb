@@ -12,8 +12,7 @@ module Rcom
     end
 
     # @param message [Hash]
-    # @return [true, nil] True if the message can be queued,
-    # or nil if it can't be queued.
+    # @return [true, nil] True if the message can be queued, otherwise nil.
     def publish(message)
       begin
         node.lpush(queue, message.to_msgpack)
