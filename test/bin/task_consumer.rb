@@ -2,7 +2,6 @@
 ENV['LOCAL'] = 'redis://localhost'
 
 require 'rcom'
-require 'json'
 
 node = Rcom::Node.new('local').connect
 messages = Rcom::Task.new(node: node, queue: 'messages')

@@ -8,29 +8,38 @@ module Rcom
     end
 
     def request(params)
-      request = {
-        id: SecureRandom.hex,
-        method: params[:method],
-        args: params[:args]
-      }
-      node.rpush(service, request.to_msgpack)
-      ch, response = node.brpop(request[:id], timeout=10)
-      MessagePack.unpack(
-        response,
-        symbolize_keys: true
-      )
+      begin
+        request = {
+          id: SecureRandom.hex,
+          method: params[:method],
+          args: params[:args] || ''
+        }
+
+        node.rpush(service, request.to_msgpack)
+        ch, response = node.brpop(request[:id], timeout=10)
+
+        MessagePack.unpack(
+          response,
+          symbolize_keys: true
+        )
+      rescue
+        return nil
+      end
     end
 
     def subscribe
       begin
         loop do
           ch, request = node.brpop(service)
+
           message = MessagePack.unpack(
             request,
             symbolize_keys: true
           )
           router = Rcom::Router.new(message)
+
           yield router
+
           node.rpush(message[:id], router.reply.to_msgpack)
         end
       rescue Interrupt => _

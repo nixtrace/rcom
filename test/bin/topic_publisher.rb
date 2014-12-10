@@ -2,7 +2,6 @@
 ENV['local'] = 'redis://localhost'
 
 require 'rcom'
-require 'json'
 
 message = {
   id: 1,
