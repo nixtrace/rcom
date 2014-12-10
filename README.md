@@ -41,6 +41,7 @@ message = {
   id: 1,
   key: 'xxxccc'
 }
+
 node = Rcom::Node.new('local').connect
 topic = Rcom::Topic.new(node: node, key: 'users')
 
@@ -65,12 +66,32 @@ A service might need to push expensive tasks into a queue and forget about them.
 - Publisher.
 
 ```ruby
+message = {
+  id: 1,
+  key: 'xxxccc'
+}
+
+node = Rcom::Node.new('local').connect
+messages = Rcom::Task.new(node: node, queue: 'messages')
+
+messages.publish(message)
 ```
 
 - Consumer.
 
 ```ruby
+node = Rcom::Node.new('local').connect
+messages = Rcom::Task.new(node: node, queue: 'messages')
+
+messages.subscribe do |message|
+  sleep 1
+  p message
+end
 ```
+
+## RPC, requests and responses.
+
+In some cases services need real time informations from other services that can't be asynchronously processed.
 
 ## Test.
 
