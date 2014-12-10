@@ -4,11 +4,19 @@ describe 'Topic' do
   before do
     ENV['LOCAL'] = 'redis://localhost'
     @node = Rcom::Node.new('local').connect
+    @topic = Rcom::Topic.new(node: @node, key: 'users')
   end
 
   it 'represents a Topic' do
-    topic = Rcom::Topic.new(node: @node, key: 'users')
-    topic.must_be_instance_of Rcom::Topic
+    @topic.must_be_instance_of Rcom::Topic
+  end
+
+  it 'can publish a message' do
+    message = {
+      id: 1,
+      key: 'xxxccc'
+    }
+    @topic.publish(message).must_equal true
   end
 
   it 'works in a pub/sub scenario' do

@@ -8,7 +8,12 @@ module Rcom
     end
 
     def publish(message)
-      node.lpush(queue, message.to_msgpack)
+      begin
+        node.lpush(queue, message.to_msgpack)
+        return true
+      rescue
+        return nil
+      end
     end
 
     def subscribe
