@@ -1,18 +1,12 @@
 module Rcom
-  # Implements pub/sub over topics.
   class Topic
     attr_reader :node, :key
 
-    # @param params [Hash]
-    # @option params :node [Rcom::Node]
-    # @option params :key [String] Example: 'services'
     def initialize(params)
       @node = params[:node]
       @key = params[:key]
     end
 
-    # @param message [Hash]
-    # @return [true, nil] true if it can be published, otherwise nil.
     def publish(message)
       begin
         node.publish(key, message.to_msgpack)
@@ -22,7 +16,6 @@ module Rcom
       end
     end
 
-    # @yieldparam message [Hash] the message received.
     def subscribe
       begin
         node.subscribe(key) do |on|

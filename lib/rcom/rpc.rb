@@ -1,5 +1,4 @@
 module Rcom
-  # Rpc implements the request/response pattern.
   class Request
     attr_reader :node, :service
 
