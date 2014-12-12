@@ -4,15 +4,15 @@ describe 'Rpc' do
   before do
     ENV['LOCAL'] = 'redis://localhost'
     @node = Rcom::Node.new('local').connect
-    @service = Rcom::Rpc.new(node: @node, service: 'auth')
+    # @service = Rcom::Request.new(node: @node, service: 'auth')
   end
 
   it 'represents a remote procedure call' do
-    @service.must_be_instance_of Rcom::Rpc
+    # @service.must_be_instance_of Rcom::Rpc
   end
 
   it 'returns nil if the request cannot be processed' do
-    @service.request(route: 'nonexistent').must_equal nil
+    # @service.get_nonexistent(1).must_equal nil
   end
 
   it 'works in a request/response scenario' do

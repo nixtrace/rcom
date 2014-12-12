@@ -3,10 +3,6 @@ ENV['LOCAL'] = 'redis://localhost'
 
 require 'rcom'
 
-message = {
-  route: 'user.key',
-  args: 1
-}
 node = Rcom::Node.new('local').connect
-auth = Rcom::Rpc.new(node: node, service: 'auth')
-p auth.request(message)
+auth = Rcom::Request.new(node: node, service: 'auth')
+p auth.get_key(user: 1)

@@ -3,11 +3,19 @@ ENV['LOCAL'] = 'redis://localhost'
 
 require 'rcom'
 
-node = Rcom::Node.new('local').connect
-auth = Rcom::Rpc.new(node: node, service: 'auth')
-
-auth.subscribe do |request|
-  request.on('user.key') do |params|
-    request.reply = 'xxxccc'
+class Server
+  def get_key(params)
+    return nil unless params[:user] == 1
+    return 'xxxccc'
   end
 end
+
+node = Rcom::Node.new('local').connect
+
+auth = Rcom::Response.new(
+  node: node,
+  service: 'auth',
+  server: Server.new
+)
+
+auth.serve
