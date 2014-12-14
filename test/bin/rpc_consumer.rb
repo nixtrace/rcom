@@ -11,10 +11,9 @@ class Server
 end
 
 node = Rcom::Node.new('local').connect
-
 auth = Rcom::Response.new(
   node: node,
-  service: 'auth',
+  channel: 'auth',
   server: Server.new
 )
 

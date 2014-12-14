@@ -1,10 +1,10 @@
 module Rcom
   class Request
-    attr_reader :node, :service
+    attr_reader :node, :channel
 
     def initialize(params)
       @node = params[:node]
-      @service = params[:service]
+      @channel = params[:channel]
     end
 
     def method_missing(name, *args)
@@ -15,13 +15,10 @@ module Rcom
           args: args || ''
         }
 
-        node.rpush(service, request.to_msgpack)
+        node.rpush(channel, request.to_msgpack)
         ch, response = node.brpop(request[:id], timeout=10)
 
-        MessagePack.unpack(
-          response,
-          symbolize_keys: true
-        )
+        MessagePack.unpack(response, symbolize_keys: true)
       rescue
         return nil
       end
@@ -29,24 +26,23 @@ module Rcom
   end
 
   class Response
-    attr_reader :node, :service, :server
+    attr_reader :node, :channel, :server
 
     def initialize(params)
       @node = params[:node]
-      @service = params[:service]
+      @channel = params[:channel]
       @server = params[:server]
     end
 
     def serve
       begin
         loop do
-          ch, request = node.brpop(service)
+          ch, request = node.brpop(channel)
 
           message = MessagePack.unpack(
             request,
             symbolize_keys: true
           )
-
           response = send_method(
             message[:method],
             *message[:args]
@@ -54,16 +50,19 @@ module Rcom
 
           node.rpush(message[:id], response.to_msgpack)
         end
+      rescue
+        sleep 1
+        retry
       rescue Interrupt => _
       end
     end
 
     def send_method(method, args)
-      # begin
+      begin
         server.send(method, args)
-      # rescue
-      #   return nil
-      # end
+      rescue
+        return nil
+      end
     end
   end
 end
