@@ -4,7 +4,7 @@ describe 'Topic' do
   before do
     ENV['LOCAL'] = 'redis://localhost'
     @node = Rcom::Node.new('local').connect
-    @topic = Rcom::Topic.new(node: @node, key: 'users')
+    @topic = Rcom::Topic.new(node: @node, channel: 'users')
   end
 
   it 'represents a Topic' do
@@ -19,27 +19,28 @@ describe 'Topic' do
     @topic.publish(message).must_equal true
   end
 
-  it 'works in a pub/sub scenario' do
-    message = {
+  it 'can subscribe to a channel and receive a message' do
+    original_message = {
       id: 1,
       key: 'xxxccc'
     }
-    read_message = ''
-    publisher = 'bundle exec ruby test/bin/topic_publisher.rb'
-    subscriber = 'bundle exec ruby test/bin/topic_subscriber.rb'
+    reader, writer = IO.pipe
 
-    # Start the subscriber, wait for it to be up,
-    # start the publisher and wait for the message
-    # on the subscriber side. Then kill
-    # the long-running subscriber.
-    Open3.popen3(subscriber) do |stdin, stdout, stderr, wait_thr|
-      sleep 2
-      spawn(publisher)
-      read_message = stdout.gets
-      Process.kill('INT', wait_thr.pid)
-    end
+    @subscriber = fork {
+      @topic.subscribe do |message|
+        writer.write message
+      end
+    }
+    Process.detach @subscriber
+    sleep 1
 
-    output = eval(read_message.chomp)
-    output.must_equal message
+    @topic.publish(original_message)
+    sleep 1
+
+    Process.kill('INT', @subscriber)
+
+    writer.close
+    eval(reader.read).must_equal original_message
+    reader.close
   end
 end
