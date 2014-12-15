@@ -7,7 +7,7 @@ module Rcom
       @channel = params[:channel]
     end
 
-    def method_missing(name, *args)
+    def method_missing(name, args)
       begin
         request = {
           id: SecureRandom.hex,
@@ -45,7 +45,7 @@ module Rcom
           )
           response = send_method(
             message[:method],
-            *message[:args]
+            message[:args]
           )
 
           node.rpush(message[:id], response.to_msgpack)
