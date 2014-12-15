@@ -1,15 +1,15 @@
 module Rcom
   class Topic
-    attr_reader :node, :key
+    attr_reader :node, :channel
 
     def initialize(params)
       @node = params[:node]
-      @key = params[:key]
+      @key = params[:channel]
     end
 
     def publish(message)
       begin
-        node.publish(key, message.to_msgpack)
+        node.publish(channel, message.to_msgpack)
         return true
       rescue
         return nil
@@ -18,7 +18,7 @@ module Rcom
 
     def subscribe
       begin
-        node.subscribe(key) do |on|
+        node.subscribe(channel) do |on|
           on.message do |channel, message|
             message = MessagePack.unpack(
               message,
@@ -27,6 +27,9 @@ module Rcom
             yield message
           end
         end
+      rescue
+        sleep 1
+        retry
       rescue Interrupt => _
       end
     end
