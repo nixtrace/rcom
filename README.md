@@ -18,7 +18,7 @@ gem 'rcom'
 
 ## Usage.
 
-Rcom supports the request-response, publish-subscribe and task queues patterns for inter-service messaging. Publishers are non-blocking, subscribers/consumers are blocking and should be run as independent processes. Processes communicate using MessagePack internally.
+Rcom supports the request-response, publish-subscribe and task queue patterns for inter-service messaging. Publishers are non-blocking, subscribers/consumers are blocking and should be run as independent processes. Processes communicate using MessagePack internally.
 
 ### Node.
 
@@ -35,7 +35,7 @@ node = Rcom::Node.new('local').connect
 
 ### Topics.
 
-One service might need to update many different services about an event, following the publish-subscribe pattern. You can publish and subscribe to topics on a node, specifying a key.
+One service might need to update many different services about an event, following the publish-subscribe pattern. You can publish and subscribe to topics on a node, specifying a channel.
 
 - Publisher.
 
@@ -46,7 +46,7 @@ message = {
 }
 
 node = Rcom::Node.new('local').connect
-topic = Rcom::Topic.new(node: node, key: 'users')
+topic = Rcom::Topic.new(node: node, channel: 'users')
 
 topic.publish(message)
 ```
@@ -55,7 +55,7 @@ topic.publish(message)
 
 ```ruby
 node = Rcom::Node.new('local').connect
-topic = Rcom::Topic.new(node: node, key: 'users')
+topic = Rcom::Topic.new(node: node, channel: 'users')
 
 topic.subscribe do |message|
   p message
@@ -64,7 +64,7 @@ end
 
 ## Tasks.
 
-A service might need to push expensive tasks into a queue and forget about them. Tasks will be processed by consumers listening to the queue.
+A service might need to push consuming tasks into a queue and forget about them. Tasks will be processed by consumers listening to the queue.
 
 - Publisher.
 
@@ -75,7 +75,7 @@ message = {
 }
 
 node = Rcom::Node.new('local').connect
-messages = Rcom::Task.new(node: node, queue: 'messages')
+messages = Rcom::Task.new(node: node, channel: 'messages')
 
 messages.publish(message)
 ```
@@ -84,7 +84,7 @@ messages.publish(message)
 
 ```ruby
 node = Rcom::Node.new('local').connect
-messages = Rcom::Task.new(node: node, queue: 'messages')
+messages = Rcom::Task.new(node: node, channel: 'messages')
 
 messages.subscribe do |message|
   sleep 1
@@ -94,37 +94,37 @@ end
 
 ## RPC, requests and responses.
 
-In some cases services need real time informations from other services that can't be asynchronously processed. A service can create a request on a route. The other service listening on the same route will reply to the request.
+In some cases services need real time informations from other services that can't be asynchronously processed. A service can request informations on a channel. The other service listening on the same route will reply to the request.
 
-- Publisher.
+- Request.
 
 ```ruby
-message = {
-  route: 'user.key',
-  args: 1
-}
-
 node = Rcom::Node.new('local').connect
-auth = Rcom::Rpc.new(node: node, service: 'auth')
+service = Rcom::Request.new(node: node, channel: 'auth')
 
-auth.request(message)
+service.get_key(user: 1)
 ```
 
-- Consumer.
+- Response.
 
 ```ruby
 node = Rcom::Node.new('local').connect
-auth = Rcom::Rpc.new(node: node, service: 'auth')
 
-auth.subscribe do |request|
-  request.on('user.key') do |params|
-    request.reply = 'xxxccc'
-  end
-
-  request.on('user.password') do |params|
-    request.reply = 'not authorized'
+class Server
+  def get_key(params)
+    user = params[:user]
+    return nil unless user == 1
+    return 'xxxccc'
   end
 end
+
+service = Rcom::Response.new(
+  node: node,
+  channel: 'auth',
+  server: Server.new
+)
+
+service.serve
 ```
 
 ## Test.
