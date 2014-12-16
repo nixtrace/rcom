@@ -1,15 +1,15 @@
 module Rcom
   class Task
-    attr_reader :node, :queue
+    attr_reader :node, :channel
 
     def initialize(params)
       @node = params[:node]
-      @queue = params[:queue]
+      @channel = params[:channel]
     end
 
     def publish(message)
       begin
-        node.lpush(queue, message.to_msgpack)
+        node.lpush(channel, message.to_msgpack)
         return true
       rescue
         return nil
@@ -19,7 +19,7 @@ module Rcom
     def subscribe
       begin
         loop do
-          ch, request = node.brpop(queue)
+          ch, request = node.brpop(channel)
           message = MessagePack.unpack(
             request,
             symbolize_keys: true
