@@ -94,7 +94,7 @@ end
 
 ## RPC, requests and responses.
 
-In some cases services need real time informations from other services that can't be asynchronously processed. A service can request informations on a channel. The other service listening on the same route will reply to the request.
+In some cases services need real-time informations from other services that can't be asynchronously processed. A service can request informations on a channel. The other service listening on the same channel will reply to the request.
 
 - Request.
 
